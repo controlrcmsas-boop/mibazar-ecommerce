@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -24,7 +25,7 @@ function App() {
             <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
             <main className="container">
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home onOpenCart={() => setIsCartOpen(true)} />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
@@ -32,6 +33,7 @@ function App() {
                 <Route path="/admin" element={<AdminDashboard />} />
               </Routes>
             </main>
+            <Footer />
           </div>
         </CartProvider>
       </AuthProvider>

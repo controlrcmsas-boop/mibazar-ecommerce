@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
 import { useCart } from '../context/CartContext'
-import { ShoppingCart, Heart, ArrowLeft, Star, MessageSquare } from 'lucide-react'
+import { ArrowLeft, ShoppingCart, Truck, ShieldCheck } from 'lucide-react'
+import { products } from '../data/products'
 import './ProductDetail.css'
 
 export default function ProductDetail() {
@@ -10,75 +10,171 @@ export default function ProductDetail() {
   const navigate = useNavigate()
   const { addToCart } = useCart()
   const [product, setProduct] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [activeImage, setActiveImage] = useState('')
+  const [selectedVariant, setSelectedVariant] = useState(null)
 
   useEffect(() => {
-    async function fetchProduct() {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('id', id)
-        .single()
-      
-      if (!error) setProduct(data)
-      setLoading(false)
+    const foundProduct = products.find(p => p.id === id)
+    if (foundProduct) {
+      setProduct(foundProduct)
+      if (foundProduct.variants && foundProduct.variants.length > 0) {
+        setSelectedVariant(foundProduct.variants[0])
+        if (foundProduct.variants[0].images) {
+          setActiveImage(foundProduct.variants[0].images[0])
+        } else {
+          setActiveImage(foundProduct.images[0])
+        }
+      } else {
+        setSelectedVariant(null)
+        setActiveImage(foundProduct.images[0])
+      }
     }
-    fetchProduct()
   }, [id])
 
-  if (loading) return <div className="loader">Cargando producto...</div>
-  if (!product) return <div className="error">Producto no encontrado</div>
+  useEffect(() => {
+    if (selectedVariant?.images?.length > 0) {
+      setActiveImage(selectedVariant.images[0])
+    }
+  }, [selectedVariant])
+
+  if (!product) return <div className="container error-msg">Producto no encontrado</div>
+
+  const relatedProducts = products.filter(p => p.id !== product.id).slice(0, 2)
 
   return (
-    <div className="product-detail-page">
+    <div className="product-detail-page container">
       <button onClick={() => navigate(-1)} className="btn-back">
-        <ArrowLeft size={20} />
-        Volver
+        <ArrowLeft size={18} /> VOLVER
       </button>
 
-      <div className="detail-container">
-        <div className="image-section glass">
-           <img src={product.image_url || 'https://via.placeholder.com/600'} alt={product.name} />
+      <div className="product-main-block">
+        {/* GALLERY */}
+        <div className="product-gallery">
+          <div className="main-image-container" style={{ opacity: selectedVariant?.stock === 0 ? 0.5 : 1, position: 'relative' }}>
+            <img src={activeImage} alt={product.name} className="main-image" />
+            {selectedVariant?.stock === 0 && <span className="tag tag-agotado" style={{ position: 'absolute', top: '15px', left: '15px', background: 'black', color: 'white', padding: '5px 10px', fontWeight: 'bold', zIndex: 10 }}>AGOTADO</span>}
+          </div>
+          <div className="thumbnail-list">
+            {(selectedVariant?.images || product.images).map((img, idx) => (
+              <div 
+                key={idx} 
+                className={`thumbnail ${activeImage === img ? 'active' : ''}`}
+                onClick={() => setActiveImage(img)}
+              >
+                <img src={img} alt={`${product.name} ${idx}`} />
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="info-section">
+        {/* INFO */}
+        <div className="product-info-column">
           <div className="info-header">
-             {product.is_experimental && <span className="badge experimental">Producto Experimental</span>}
-             <h1>{product.name}</h1>
-             <p className="price-large">${product.price}</p>
+            {product.isNew && <span className="tag tag-new">NUEVO</span>}
+            <h1 className="detail-title">{product.name}</h1>
+            <p className="detail-price">
+              ${selectedVariant ? selectedVariant.price.toLocaleString() : product.price.toLocaleString()}
+            </p>
           </div>
 
-          <div className="description glass">
-             <h3>Descripción</h3>
-             <p>{product.description || 'Sin descripción disponible.'}</p>
+          <div className="detail-description">
+            <p>{product.description}</p>
           </div>
 
-          <div className="stock-info">
-             <span className={product.stock > 0 ? 'in-stock' : 'out-of-stock'}>
-               {product.stock > 0 ? `Stock disponible: ${product.stock}` : 'Agotado'}
-             </span>
+          <div className="product-specs">
+            <div className="spec-item"><strong>Marca:</strong> {product.brand}</div>
+            <div className="spec-item"><strong>Material:</strong> {product.material}</div>
+            <div className="spec-item"><strong>Categoría:</strong> {product.category}</div>
           </div>
 
-          <div className="detail-actions">
-             <button onClick={() => addToCart(product)} className="btn-primary btn-large">
-               <ShoppingCart size={24} />
-               Agregar al carrito
-             </button>
-             <button className="btn-icon btn-large">
-               <Heart size={24} />
-             </button>
+          {product.variants && product.variants.length > 0 && (
+            <div className="product-variants" style={{ marginBottom: '20px' }}>
+              <h4 style={{ marginBottom: '10px' }}>Selecciona modelo/opción:</h4>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {product.variants.map(variant => (
+                  <button 
+                    key={variant.id}
+                    onClick={() => setSelectedVariant(variant)}
+                    className="btn-secondary"
+                    style={{ 
+                      padding: '8px 16px',
+                      opacity: selectedVariant?.id === variant.id ? 1 : 0.6,
+                      border: selectedVariant?.id === variant.id ? '2px solid var(--primary-color)' : '1px solid #ccc'
+                    }}
+                  >
+                    {variant.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button 
+            onClick={() => {
+              if (selectedVariant?.stock === 0) return;
+              const itemToAdd = selectedVariant 
+                ? { 
+                    ...product, 
+                    id: `${product.id}-${selectedVariant.id}`, 
+                    name: `${product.name} - ${selectedVariant.name}`, 
+                    price: selectedVariant.price,
+                    stock: selectedVariant.stock,
+                    images: selectedVariant.images?.length > 0 ? selectedVariant.images : product.images
+                  }
+                : product;
+              addToCart(itemToAdd);
+            }} 
+            className={`btn-secondary buy-now-btn ${selectedVariant?.stock === 0 ? 'disabled' : ''}`}
+            disabled={selectedVariant?.stock === 0}
+            style={{ opacity: selectedVariant?.stock === 0 ? 0.5 : 1, cursor: selectedVariant?.stock === 0 ? 'not-allowed' : 'pointer' }}
+          >
+            {selectedVariant?.stock === 0 ? 'AGOTADO' : 'AGREGAR AL CARRITO'}
+          </button>
+
+          {selectedVariant && selectedVariant.stock > 0 && (
+             <p className="stock-info" style={{ color: 'var(--primary-color)', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+               Disponibles: {selectedVariant.stock}
+             </p>
+          )}
+
+          <div className="trust-badges">
+            <div className="trust-item"><Truck size={18} /> Envío a todo el país</div>
+            <div className="trust-item"><ShieldCheck size={18} /> Compra segura</div>
           </div>
         </div>
       </div>
 
-      <section className="comments-section glass">
-         <h2>
-            <MessageSquare size={24} />
-            Comentarios
-         </h2>
-         <p className="text-muted">Inicia sesión para dejar un comentario sobre este producto.</p>
-         {/* Comment list will go here */}
+      {/* DETALLES EXTENDIDOS */}
+      <section className="extended-details">
+        <h2 className="detail-section-title">CARACTERÍSTICAS</h2>
+        <p className="details-text">{product.details}</p>
+      </section>
+
+      {/* PRODUCTOS RELACIONADOS */}
+      <section className="related-section">
+        <h2 className="detail-section-title">PRODUCTOS RELACIONADOS</h2>
+        <div className="product-grid">
+          {relatedProducts.map(p => (
+            <div key={p.id} className="product-card">
+              <Link to={`/product/${p.id}`} className="product-image-link">
+                <div className="image-container">
+                  <img src={p.images[0]} alt={p.name} />
+                </div>
+              </Link>
+              <div className="product-info">
+                <h3 className="product-name">{p.name}</h3>
+                <p className="product-price">${p.price.toLocaleString()}</p>
+                <button onClick={() => addToCart(p)} className="btn-primary product-add-btn">
+                  AGREGAR
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   )
 }
+
+// Necesitamos importar Link para los relacionados
+import { Link } from 'react-router-dom'

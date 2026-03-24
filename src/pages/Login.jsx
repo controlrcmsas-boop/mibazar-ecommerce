@@ -21,7 +21,7 @@ export default function Login() {
 
   return (
     <div className="auth-page">
-      <div className="auth-card glass">
+      <div className="auth-card">
         <div className="auth-header">
           <LogIn size={40} className="logo-icon" />
           <h2>Bienvenido de nuevo</h2>

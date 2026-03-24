@@ -1,84 +1,77 @@
 .navbar {
-  position: sticky;
-  top: 1rem;
-  margin: 1rem;
-  z-index: 100;
-  padding: 0.75rem 0;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid var(--gray-light);
 }
 
 .nav-content {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 2rem;
-}
-
-.logo {
-  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1.5rem;
-  font-weight: 800;
-}
-
-.logo-icon {
-  color: var(--primary);
-}
-
-.search-bar {
-  flex: 1;
-  max-width: 500px;
-  display: flex;
-  align-items: center;
-  padding: 0 1rem;
-  height: 2.5rem;
-}
-
-.search-icon {
-  color: var(--text-muted);
-}
-
-.search-bar input {
-  background: transparent;
-  border: none;
   width: 100%;
-  height: 100%;
-  padding: 0 0.75rem;
+}
+
+.logo-img {
+  height: 48px;
+  object-fit: contain;
 }
 
 .nav-actions {
   display: flex;
+  gap: 2rem;
   align-items: center;
-  gap: 1.5rem;
 }
 
-.nav-link {
-  color: var(--text);
-  transition: color 0.2s, transform 0.2s;
+.cart-link {
   display: flex;
   align-items: center;
-  position: relative;
+  gap: 0.5rem;
+  color: var(--dark);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
 }
 
-.nav-link:hover {
-  color: var(--primary);
-  transform: translateY(-2px);
+.cart-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .cart-badge {
   position: absolute;
   top: -8px;
   right: -8px;
-  background: var(--primary);
+  background: var(--secondary);
   color: white;
   font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-weight: bold;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+.login-btn, .admin-btn {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.login-btn:hover, .admin-btn:hover {
+  color: var(--primary);
 }
 
 @media (max-width: 768px) {
-  .search-bar {
+  .cart-text {
     display: none;
+  }
+  .logo-img {
+    height: 40px;
   }
 }

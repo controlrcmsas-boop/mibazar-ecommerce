@@ -21,7 +21,7 @@ export default function Register() {
 
   return (
     <div className="auth-page">
-      <div className="auth-card glass">
+      <div className="auth-card">
         <div className="auth-header">
           <UserPlus size={40} className="logo-icon" />
           <h2>Crear cuenta</h2>

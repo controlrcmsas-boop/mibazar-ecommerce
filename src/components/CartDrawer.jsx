@@ -11,9 +11,9 @@ export default function CartDrawer({ isOpen, onClose }) {
 
   return (
     <div className="cart-overlay" onClick={onClose}>
-      <div className="cart-drawer glass" onClick={e => e.stopPropagation()}>
+      <div className="cart-drawer" onClick={e => e.stopPropagation()}>
         <div className="cart-header">
-          <h2>Tu Carrito</h2>
+          <h2 className="cart-title">MI CARRITO</h2>
           <button onClick={onClose} className="btn-close">
             <X size={24} />
           </button>
@@ -22,24 +22,34 @@ export default function CartDrawer({ isOpen, onClose }) {
         <div className="cart-items">
           {cart.length === 0 ? (
             <div className="empty-cart">
-              <ShoppingBag size={48} />
+              <ShoppingBag size={48} strokeWidth={1} />
               <p>Tu carrito está vacío</p>
+              <button onClick={onClose} className="btn-primary">VER PRODUCTOS</button>
             </div>
           ) : (
             cart.map(item => (
               <div key={item.id} className="cart-item">
-                <img src={item.image_url || 'https://via.placeholder.com/80'} alt={item.name} />
+                <div className="cart-item-image">
+                  <img src={item.images ? item.images[0] : '/images/placeholder.png'} alt={item.name} />
+                </div>
                 <div className="item-info">
-                  <h4>{item.name}</h4>
-                  <p className="item-price">${item.price}</p>
+                  <h4 className="item-name">{item.name}</h4>
+                  <p className="item-price">${item.price.toLocaleString()}</p>
                   <div className="quantity-controls">
-                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)}><Minus size={16} /></button>
-                    <span>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)}><Plus size={16} /></button>
+                    <button className="q-btn" onClick={() => updateQuantity(item.id, item.quantity - 1)}><Minus size={14} /></button>
+                    <span className="q-val font-bold">{item.quantity}</span>
+                    <button 
+                      className="q-btn" 
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      disabled={item.quantity >= (item.stock ?? Infinity)}
+                      style={{ opacity: item.quantity >= (item.stock ?? Infinity) ? 0.3 : 1 }}
+                    >
+                      <Plus size={14} />
+                    </button>
                   </div>
                 </div>
                 <button onClick={() => removeFromCart(item.id)} className="btn-remove">
-                  <Trash2 size={20} />
+                  <Trash2 size={18} />
                 </button>
               </div>
             ))
@@ -49,14 +59,14 @@ export default function CartDrawer({ isOpen, onClose }) {
         {cart.length > 0 && (
           <div className="cart-footer">
             <div className="total-row">
-              <span>Total:</span>
-              <span className="total-amount">${cartTotal}</span>
+              <span className="total-label">Subtotal:</span>
+              <span className="total-amount">${cartTotal.toLocaleString()}</span>
             </div>
             <button 
               onClick={() => { navigate('/checkout'); onClose(); }} 
-              className="btn-primary w-full btn-large"
+              className="btn-primary checkout-btn"
             >
-              Finalizar Compra
+              FINALIZAR COMPRA
             </button>
           </div>
         )}

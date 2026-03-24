@@ -1,67 +1,139 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
-import { ShoppingBag, Star } from 'lucide-react'
+import { ShoppingBag, ArrowRight } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { Link } from 'react-router-dom'
+import { products } from '../data/products'
 import './Home.css'
 
-export default function Home() {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+export default function Home({ onOpenCart }) {
   const { addToCart } = useCart()
 
-  useEffect(() => {
-    async function fetchProducts() {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false })
-      
-      if (!error) setProducts(data || [])
-      setLoading(false)
-    }
-    fetchProducts()
-  }, [])
+  // Separamos productos por secciones o categorías si es necesario
+  const featuredProducts = products.slice(0, 4)
+  const remainingProducts = products.slice(4)
 
   return (
     <div className="home-page">
-      <header className="hero">
-        <h1 className="gradient-text">Bienvenidos a MiBazar</h1>
-        <p>Encuentra productos únicos y validados para ti.</p>
-      </header>
+      {/* SECTION: HERO */}
+      <section className="hero-section">
+        <div className="hero-background">
+          <img src="/images/Hero MiBazar.png" alt="Hero MiBazar" className="hero-bg-image" />
+        </div>
+        <div className="container hero-container-centered">
+          <div className="hero-content-bottom">
+            <h1 className="hero-title">
+              DESCUBRE EL MUNDO <br />
+              <span className="hero-highlight">DE MIBAZAR</span>
+            </h1>
+            <p className="hero-subtitle">
+              Juguetes STEAM, accesorios únicos y mucho más para todas las edades.
+            </p>
+            <a href="https://wa.me/573005740774" target="_blank" rel="noopener noreferrer" className="btn-secondary hero-btn" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              ¡ESCRÍBENOS! <ArrowRight size={20} />
+            </a>
+          </div>
+        </div>
+      </section>
 
-      <section className="product-grid">
-        {loading ? (
-          <div className="loader">Cargando productos...</div>
-        ) : (
-          products.map(product => (
-            <div key={product.id} className="product-card glass">
-              <Link to={`/product/${product.id}`} className="product-image">
-                <img src={product.image_url || 'https://via.placeholder.com/300'} alt={product.name} />
-                {product.is_experimental && <span className="badge experimental">Nuevo</span>}
+      {/* SECTION: GRID PRODUCTOS (Destacados) */}
+      <section className="products-section container">
+        <h2 className="section-title">LO MÁS NUEVO</h2>
+        <div className="product-grid">
+          {featuredProducts.map(product => {
+            const totalStock = product.variants 
+              ? product.variants.reduce((acc, v) => acc + (v.stock ?? Infinity), 0)
+              : (product.stock ?? Infinity);
+            const isOutOfStock = totalStock === 0;
+
+            return (
+            <div key={product.id} className={`product-card ${isOutOfStock ? 'out-of-stock' : ''}`}>
+              <Link to={`/product/${product.id}`} className="product-image-link" style={{ pointerEvents: isOutOfStock ? 'none' : 'auto' }}>
+                <div className="image-container" style={{ opacity: isOutOfStock ? 0.5 : 1 }}>
+                  <img src={product.images[0]} alt={product.name} />
+                  {product.isNew && !isOutOfStock && <span className="tag tag-new">NUEVO</span>}
+                  {isOutOfStock && <span className="tag tag-agotado" style={{ background: 'black', color: 'white', padding: '5px 10px', fontWeight: 'bold', position: 'absolute', top: '10px', left: '10px' }}>AGOTADO</span>}
+                </div>
               </Link>
               <div className="product-info">
-                <h3>{product.name}</h3>
-                <p className="price">${product.price}</p>
-                <div className="product-actions">
-                  <button onClick={() => addToCart(product)} className="btn-primary">
-                    <ShoppingBag size={18} />
-                    Agregar
+                <h3 className="product-name">{product.name}</h3>
+                {product.variants ? (
+                  <p className="product-price">Desde ${Math.min(...product.variants.map(v => v.price)).toLocaleString()}</p>
+                ) : (
+                  <p className="product-price">${product.price.toLocaleString()}</p>
+                )}
+                {isOutOfStock ? (
+                  <button className="btn-primary product-add-btn disabled" disabled style={{ opacity: 0.5, cursor: 'not-allowed', width: '100%' }}>
+                    AGOTADO
                   </button>
-                  <button className="btn-icon">
-                    <Star size={18} />
+                ) : product.variants ? (
+                  <Link to={`/product/${product.id}`} className="btn-primary product-add-btn" style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}>
+                    VER OPCIONES
+                  </Link>
+                ) : (
+                  <button onClick={() => addToCart(product)} className="btn-primary product-add-btn">
+                    AGREGAR
                   </button>
-                </div>
+                )}
               </div>
             </div>
-          ))
-        )}
-        
-        {!loading && products.length === 0 && (
-          <div className="empty-state glass">
-             <p>No hay productos disponibles en este momento.</p>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* SECTION: BLOQUE PROMOCIONAL */}
+      <section className="promo-block">
+        <div className="container promo-container">
+          <div className="promo-content">
+            <h2 className="promo-text">¡OBTÉN UN DESCUENTO ESPECIAL PARA TU PRÓXIMA COMPRA!</h2>
+            <button className="btn-white" onClick={onOpenCart}>QUIERO MI DESCUENTO</button>
           </div>
-        )}
+        </div>
+      </section>
+
+      {/* SECTION: GRID PRODUCTOS (Resto) */}
+      <section className="products-section container">
+        {/* <h2 className="section-title">NUESTRO CATÁLOGO</h2> */}
+        <div className="product-grid">
+          {remainingProducts.map(product => {
+            const totalStock = product.variants 
+              ? product.variants.reduce((acc, v) => acc + (v.stock ?? Infinity), 0)
+              : (product.stock ?? Infinity);
+            const isOutOfStock = totalStock === 0;
+
+            return (
+            <div key={product.id} className={`product-card ${isOutOfStock ? 'out-of-stock' : ''}`}>
+              <Link to={`/product/${product.id}`} className="product-image-link" style={{ pointerEvents: isOutOfStock ? 'none' : 'auto' }}>
+                <div className="image-container" style={{ opacity: isOutOfStock ? 0.5 : 1 }}>
+                  <img src={product.images[0]} alt={product.name} />
+                  {product.isNew && !isOutOfStock && <span className="tag tag-new">NUEVO</span>}
+                  {isOutOfStock && <span className="tag tag-agotado" style={{ background: 'black', color: 'white', padding: '5px 10px', fontWeight: 'bold', position: 'absolute', top: '10px', left: '10px' }}>AGOTADO</span>}
+                </div>
+              </Link>
+              <div className="product-info">
+                <h3 className="product-name">{product.name}</h3>
+                {product.variants ? (
+                  <p className="product-price">Desde ${Math.min(...product.variants.map(v => v.price)).toLocaleString()}</p>
+                ) : (
+                  <p className="product-price">${product.price.toLocaleString()}</p>
+                )}
+                {isOutOfStock ? (
+                  <button className="btn-primary product-add-btn disabled" disabled style={{ opacity: 0.5, cursor: 'not-allowed', width: '100%' }}>
+                    AGOTADO
+                  </button>
+                ) : product.variants ? (
+                  <Link to={`/product/${product.id}`} className="btn-primary product-add-btn" style={{ textDecoration: 'none', display: 'block', textAlign: 'center' }}>
+                    VER OPCIONES
+                  </Link>
+                ) : (
+                  <button onClick={() => addToCart(product)} className="btn-primary product-add-btn">
+                    AGREGAR
+                  </button>
+                )}
+              </div>
+            </div>
+            );
+          })}
+        </div>
       </section>
     </div>
   )
