@@ -12,9 +12,18 @@ import ProductDetail from './pages/ProductDetail'
 import Checkout from './pages/Checkout'
 import AdminDashboard from './pages/AdminDashboard'
 import './index.css'
+import { supabase } from './lib/supabase'
+
+console.log("MiBazar App: Starting...")
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [initError, setInitError] = useState(null)
+
+  // Verificación rápida de Supabase
+  if (!supabase) {
+    return <div style={{ padding: '20px', textAlign: 'center' }}>Error: El sistema no pudo iniciar.</div>
+  }
 
   return (
     <Router>
