@@ -8,18 +8,23 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get session
+    // Bypass Supabase initialization for now to fix blank page
+    console.log("AuthContext: Bypass Mode Active")
+    setUser(null)
+    setLoading(false)
+    
+    /* 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       setLoading(false)
     })
-
-    // Listen for changes
+    
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
 
     return () => subscription.unsubscribe()
+    */
   }, [])
 
   const signUp = (email, password) => supabase.auth.signUp({ email, password })
