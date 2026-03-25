@@ -1,3 +1,4 @@
+window.alert("MiBazar: Motor Iniciado (2026-03-24)");
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
