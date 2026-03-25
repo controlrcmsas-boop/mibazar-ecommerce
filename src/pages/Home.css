@@ -241,28 +241,15 @@
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  /* Carrusel vuelve a grid en tablet */
-  .product-carousel {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    overflow-x: visible;
-    scroll-snap-type: none;
-  }
-
+  /* Carrusel sigue siendo carrusel (horizontal scroll), solo se quitan las restricciones en tablet si hiciera falta, pero mantenemos el overflow. */
   .product-carousel .product-card {
-    min-width: unset;
-    max-width: unset;
+    min-width: 320px;
+    max-width: 360px;
   }
 }
 
 @media (min-width: 1024px) {
   .product-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2rem;
-  }
-
-  .product-carousel {
     grid-template-columns: repeat(4, 1fr);
     gap: 2rem;
   }
