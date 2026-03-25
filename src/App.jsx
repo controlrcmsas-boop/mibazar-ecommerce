@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { CartProvider } from './context/CartContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
@@ -16,21 +17,23 @@ function App() {
 
   return (
     <Router>
-        <div className="app">
-          <Navbar onCartClick={() => setIsCartOpen(true)} />
-          <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-          <main className="container">
-            <Routes>
-              <Route path="/" element={<Home onOpenCart={() => setIsCartOpen(true)} />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <CartProvider>
+          <div className="app">
+            <Navbar onCartClick={() => setIsCartOpen(true)} />
+            <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+            <main className="container">
+              <Routes>
+                <Route path="/" element={<Home onOpenCart={() => setIsCartOpen(true)} />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </CartProvider>
     </Router>
   )
 }
