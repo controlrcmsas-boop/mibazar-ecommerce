@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -17,6 +18,7 @@ function App() {
 
   return (
     <Router>
+      <AuthProvider>
         <CartProvider>
           <div className="app">
             <Navbar onCartClick={() => setIsCartOpen(true)} />
@@ -34,6 +36,7 @@ function App() {
             <Footer />
           </div>
         </CartProvider>
+      </AuthProvider>
     </Router>
   )
 }
