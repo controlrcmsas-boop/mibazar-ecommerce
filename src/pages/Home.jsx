@@ -1,4 +1,5 @@
-import { ShoppingBag, ArrowRight } from 'lucide-react'
+import { useRef } from 'react'
+import { ShoppingBag, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { Link } from 'react-router-dom'
 import { products } from '../data/products'
@@ -6,6 +7,17 @@ import './Home.css'
 
 export default function Home({ onOpenCart }) {
   const { addToCart } = useCart()
+  const carouselRef = useRef(null)
+
+  const scrollCarousel = (direction) => {
+    if (carouselRef.current) {
+      const scrollAmount = 300 // aprox 1 card width
+      carouselRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      })
+    }
+  }
 
   // Separamos productos por secciones o categorías si es necesario
   const featuredProducts = products.slice(0, 4)
@@ -36,8 +48,18 @@ export default function Home({ onOpenCart }) {
 
       {/* SECTION: CARRUSEL PRODUCTOS (Destacados) */}
       <section className="products-section container">
-        <h2 className="section-title">CATÁLOGO</h2>
-        <div className="product-carousel">
+        <div className="carousel-header">
+          <h2 className="section-title" style={{ marginBottom: 0 }}>CATÁLOGO</h2>
+          <div className="carousel-controls">
+            <button className="carousel-control-btn" onClick={() => scrollCarousel('left')} aria-label="Anterior">
+              <ChevronLeft size={24} />
+            </button>
+            <button className="carousel-control-btn" onClick={() => scrollCarousel('right')} aria-label="Siguiente">
+              <ChevronRight size={24} />
+            </button>
+          </div>
+        </div>
+        <div className="product-carousel" ref={carouselRef}>
           {featuredProducts.map(product => {
             const totalStock = product.variants 
               ? product.variants.reduce((acc, v) => acc + (v.stock ?? Infinity), 0)

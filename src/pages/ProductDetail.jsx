@@ -39,6 +39,9 @@ export default function ProductDetail() {
   };
 
   useEffect(() => {
+    // Scroll al inicio cada vez que se cambia de producto
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     const foundProduct = products.find(p => p.id === id)
     if (foundProduct) {
       setProduct(foundProduct)
@@ -136,16 +139,6 @@ export default function ProductDetail() {
             </p>
           </div>
 
-          <div className="detail-description">
-            <p>{product.description}</p>
-          </div>
-
-          <div className="product-specs">
-            <div className="spec-item"><strong>Marca:</strong> {product.brand}</div>
-            <div className="spec-item"><strong>Material:</strong> {product.material}</div>
-            <div className="spec-item"><strong>Categoría:</strong> {product.category}</div>
-          </div>
-
           {product.variants && product.variants.length > 0 && (
             <div className="product-variants" style={{ marginBottom: '20px' }}>
               <h4 style={{ marginBottom: '10px' }}>Selecciona modelo/opción:</h4>
@@ -167,6 +160,16 @@ export default function ProductDetail() {
               </div>
             </div>
           )}
+
+          <div className="detail-description">
+            <p>{product.description}</p>
+          </div>
+
+          <div className="product-specs">
+            <div className="spec-item"><strong>Marca:</strong> {product.brand}</div>
+            <div className="spec-item"><strong>Material:</strong> {product.material}</div>
+            <div className="spec-item"><strong>Categoría:</strong> {product.category}</div>
+          </div>
 
           <button 
             onClick={() => {

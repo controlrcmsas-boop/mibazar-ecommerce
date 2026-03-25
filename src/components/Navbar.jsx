@@ -11,7 +11,7 @@ export default function Navbar({ onCartClick }) {
   return (
     <nav className="navbar sticky-header">
       <div className="container nav-content">
-        <Link to="/" className="logo">
+        <Link to="/" className="logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <img src="/images/Logo MiBazar.png" alt="MiBazar Logo" className="logo-img" />
         </Link>
 

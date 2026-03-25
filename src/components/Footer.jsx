@@ -1,4 +1,5 @@
 import { Send } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import './Footer.css'
 
 export default function Footer() {
@@ -6,7 +7,9 @@ export default function Footer() {
     <footer className="footer">
       <div className="container footer-content">
         <div className="footer-brand">
-          <img src="/images/Logo UGO.png" alt="UGO Logo" className="footer-logo" />
+          <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <img src="/images/Logo UGO.png" alt="UGO Logo" className="footer-logo" />
+          </Link>
           <p className="footer-tagline">Calidad y diversión en un solo lugar.</p>
         </div>
         

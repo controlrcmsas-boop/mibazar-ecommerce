@@ -57,6 +57,7 @@
   justify-content: center;
   scroll-snap-align: start;
   flex-shrink: 0;
+  max-width: 100%; /* Evitar desbordes accidentales si la imagen es gigante */
 }
 
 .main-image {
@@ -225,6 +226,23 @@
     grid-template-columns: 1fr;
     gap: 2rem;
     margin-bottom: 3rem;
+  }
+
+  /* Estandarizar todas las fotos a 1/1 y limitar su tamaño base en celular */
+  .product-gallery {
+    width: 100%;
+    max-width: 300px; /* Esto bajará la altura también a máximo 300px (1/1) */
+    margin: 0 auto;
+  }
+
+  .image-carousel-track-wrapper {
+    max-height: none; 
+    aspect-ratio: 1/1; /* Forzar el marco a ser cuadrado estandarizado */
+  }
+
+  .image-carousel-slide {
+    aspect-ratio: 1/1; /* Recuperar el cuadrado real */
+    height: auto;
   }
 
   .detail-title {

@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import Navbar from './components/Navbar'
@@ -13,6 +13,16 @@ import Checkout from './pages/Checkout'
 import AdminDashboard from './pages/AdminDashboard'
 import './index.css'
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [pathname])
+
+  return null
+}
+
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false)
 
@@ -21,6 +31,7 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <div className="app">
+            <ScrollToTop />
             <Navbar onCartClick={() => setIsCartOpen(true)} />
             <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
             <main className="container">

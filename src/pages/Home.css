@@ -81,12 +81,43 @@
   font-size: 1rem;
 }
 
-/* PRODUCT GRID */
 .section-title {
   font-size: 1.75rem;
   font-weight: 800;
   margin-bottom: 2rem;
   color: var(--dark);
+}
+
+.carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.carousel-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.carousel-control-btn {
+  background: white;
+  border: 1px solid var(--gray-light);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.carousel-control-btn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
 }
 
 .products-section {

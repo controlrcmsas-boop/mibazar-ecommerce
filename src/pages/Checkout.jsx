@@ -12,6 +12,7 @@ export default function Checkout() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [formData, setFormData] = useState({
     fullName: '',
     address: '',
@@ -24,9 +25,18 @@ export default function Checkout() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = async (e) => {
+  const handleInitialSubmit = (e) => {
     e.preventDefault()
+    if (!formData.fullName || !formData.phone || !formData.address) {
+      alert("Nombre, teléfono y dirección son obligatorios.")
+      return
+    }
+    setShowConfirmModal(true)
+  }
+
+  const processOrder = async () => {
     setLoading(true)
+    setShowConfirmModal(false)
 
     try {
       // Generamos un número de orden aleatorio temporal
@@ -62,6 +72,21 @@ export default function Checkout() {
     }
   }
 
+  const openInfoWhatsApp = () => {
+    setShowConfirmModal(false)
+    window.open("https://wa.me/573005740774", "_blank")
+  }
+
+  const getPaymentMessage = () => {
+    if (formData.paymentMethod === 'nequi') {
+      return "Debe consignar el valor de los productos mas el valor del envio al numero Nequi 3016425879.";
+    }
+    if (formData.paymentMethod === 'breb') {
+      return `Debe consignar el valor de los productos mas el valor del envio a la llave BREB @3005740774.`;
+    }
+    return "Debe consignar el valor del envio a Nequi 3016425879 o a la llave BREB @3005740774, y el valor del producto lo debe realizar al momento de recibir el producto.";
+  };
+
   if (success) {
     return (
       <div className="checkout-success container">
@@ -77,8 +102,26 @@ export default function Checkout() {
     <div className="checkout-page container">
       <h1 className="checkout-title">FINALIZAR COMPRA</h1>
       
+      {showConfirmModal && (
+        <div className="modal-overlay">
+          <div className="confirm-modal">
+            <h3 className="modal-title">¡IMPORTANTE! COSTO DE ENVÍO Y PAGO</h3>
+            <div className="modal-body">
+              <p className="shipping-notice">Falta el costo del envío, el cual se debe cotizar adicionalmente.</p>
+              <p className="payment-notice">{getPaymentMessage()}</p>
+              <p className="receipt-notice" style={{ fontWeight: 'bold' }}>Todos los comprobantes de pago deben enviarse al WhatsApp +573005740774.</p>
+            </div>
+            <div className="modal-actions">
+              <button type="button" onClick={processOrder} className="btn-primary">Aceptar</button>
+              <button type="button" onClick={openInfoWhatsApp} className="btn-secondary">Más información</button>
+              <button type="button" onClick={() => setShowConfirmModal(false)} className="btn-cancel" style={{ background: 'transparent', color: '#666', border: 'none', textDecoration: 'underline', marginTop: '1rem', cursor: 'pointer', width: '100%' }}>Volver y editar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="checkout-grid">
-        <form onSubmit={handleSubmit} className="checkout-form">
+        <form onSubmit={handleInitialSubmit} className="checkout-form">
           <section className="checkout-section">
             <h3 className="section-label"><Truck size={20} /> DATOS DE ENVÍO</h3>
             <div className="form-group">
