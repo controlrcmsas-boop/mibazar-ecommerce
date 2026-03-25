@@ -1,10 +1,15 @@
+import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Navbar from './components/Navbar'
+import Footer from './components/Footer'
+import CartDrawer from './components/CartDrawer'
+import Home from './pages/Home'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import ProductDetail from './pages/ProductDetail'
 import Checkout from './pages/Checkout'
 import AdminDashboard from './pages/AdminDashboard'
 import './index.css'
-
-console.log("🚀 MiBazar App: Rendereando...")
-
-console.log("🚀 MiBazar App: Iniciando modo ultra-rápido...")
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false)
