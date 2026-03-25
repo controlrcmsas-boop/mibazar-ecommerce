@@ -34,10 +34,10 @@ export default function Home({ onOpenCart }) {
         </div>
       </section>
 
-      {/* SECTION: GRID PRODUCTOS (Destacados) */}
+      {/* SECTION: CARRUSEL PRODUCTOS (Destacados) */}
       <section className="products-section container">
-        <h2 className="section-title">LO MÁS NUEVO</h2>
-        <div className="product-grid">
+        <h2 className="section-title">CATÁLOGO</h2>
+        <div className="product-carousel">
           {featuredProducts.map(product => {
             const totalStock = product.variants 
               ? product.variants.reduce((acc, v) => acc + (v.stock ?? Infinity), 0)

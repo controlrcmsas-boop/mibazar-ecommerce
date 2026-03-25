@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { ArrowLeft, ShoppingCart, Truck, ShieldCheck } from 'lucide-react'
@@ -11,7 +11,32 @@ export default function ProductDetail() {
   const { addToCart } = useCart()
   const [product, setProduct] = useState(null)
   const [activeImage, setActiveImage] = useState('')
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState(null)
+  const trackRef = useRef(null)
+
+  const handleScroll = () => {
+    if (!trackRef.current) return;
+    const scrollPosition = trackRef.current.scrollLeft;
+    const slideWidth = trackRef.current.clientWidth;
+    const newIndex = Math.round(scrollPosition / slideWidth);
+    if (newIndex !== activeImageIndex) {
+      setActiveImageIndex(newIndex);
+      const images = selectedVariant?.images?.length > 0 ? selectedVariant.images : product?.images;
+      if (images && images[newIndex]) {
+        setActiveImage(images[newIndex]);
+      }
+    }
+  };
+
+  const scrollToImage = (index) => {
+    if (!trackRef.current) return;
+    const slideWidth = trackRef.current.clientWidth;
+    trackRef.current.scrollTo({
+      left: slideWidth * index,
+      behavior: 'smooth'
+    });
+  };
 
   useEffect(() => {
     const foundProduct = products.find(p => p.id === id)
@@ -34,6 +59,7 @@ export default function ProductDetail() {
   useEffect(() => {
     if (selectedVariant?.images?.length > 0) {
       setActiveImage(selectedVariant.images[0])
+      setActiveImageIndex(0)
     }
   }, [selectedVariant])
 
@@ -48,23 +74,56 @@ export default function ProductDetail() {
       </button>
 
       <div className="product-main-block">
-        {/* GALLERY */}
+        {/* GALLERY - CARRUSEL */}
         <div className="product-gallery">
-          <div className="main-image-container" style={{ opacity: selectedVariant?.stock === 0 ? 0.5 : 1, position: 'relative' }}>
-            <img src={activeImage} alt={product.name} className="main-image" />
-            {selectedVariant?.stock === 0 && <span className="tag tag-agotado" style={{ position: 'absolute', top: '15px', left: '15px', background: 'black', color: 'white', padding: '5px 10px', fontWeight: 'bold', zIndex: 10 }}>AGOTADO</span>}
-          </div>
-          <div className="thumbnail-list">
-            {(selectedVariant?.images || product.images).map((img, idx) => (
-              <div 
-                key={idx} 
-                className={`thumbnail ${activeImage === img ? 'active' : ''}`}
-                onClick={() => setActiveImage(img)}
-              >
-                <img src={img} alt={`${product.name} ${idx}`} />
-              </div>
-            ))}
-          </div>
+          {
+            (() => {
+              const images = selectedVariant?.images?.length > 0 ? selectedVariant.images : product.images
+              return (
+                <>
+                  <div className="image-carousel-track-wrapper" style={{ position: 'relative', opacity: selectedVariant?.stock === 0 ? 0.5 : 1 }}>
+                    <div 
+                      className="image-carousel-track" 
+                      ref={trackRef} 
+                      onScroll={handleScroll}
+                    >
+                      {images.map((img, idx) => (
+                        <div key={idx} className="image-carousel-slide">
+                          <img src={img} alt={`${product.name} ${idx + 1}`} className="main-image" />
+                        </div>
+                      ))}
+                    </div>
+                    {selectedVariant?.stock === 0 && <span className="tag tag-agotado" style={{ position: 'absolute', top: '15px', left: '15px', background: 'black', color: 'white', padding: '5px 10px', fontWeight: 'bold', zIndex: 10 }}>AGOTADO</span>}
+                  </div>
+                  {/* Dot indicators */}
+                  {images.length > 1 && (
+                    <div className="carousel-dots">
+                      {images.map((img, idx) => (
+                        <button
+                          key={idx}
+                          className={`carousel-dot ${activeImageIndex === idx ? 'active' : ''}`}
+                          onClick={() => scrollToImage(idx)}
+                          aria-label={`Foto ${idx + 1}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  {/* Thumbnails */}
+                  <div className="thumbnail-list">
+                    {images.map((img, idx) => (
+                      <div
+                        key={idx}
+                        className={`thumbnail ${activeImageIndex === idx ? 'active' : ''}`}
+                        onClick={() => scrollToImage(idx)}
+                      >
+                        <img src={img} alt={`${product.name} ${idx}`} />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )
+            })()
+          }
         </div>
 
         {/* INFO */}
