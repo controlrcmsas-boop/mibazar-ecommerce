@@ -14,9 +14,8 @@
 }
 
 .footer-logo {
-  height: 60px;
-  filter: brightness(0) invert(1);
-  margin-bottom: 1rem;
+  height: 80px;
+  margin-bottom: 1.5rem;
 }
 
 .footer-tagline {

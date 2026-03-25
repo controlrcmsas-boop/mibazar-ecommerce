@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="container footer-content">
         <div className="footer-brand">
-          <img src="/images/Logo MiBazar.png" alt="MiBazar Logo" className="footer-logo" />
+          <img src="/images/Logo UGO.png" alt="UGO Logo" className="footer-logo" />
           <p className="footer-tagline">Calidad y diversión en un solo lugar.</p>
         </div>
         
