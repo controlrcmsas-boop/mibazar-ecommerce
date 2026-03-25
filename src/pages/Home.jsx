@@ -16,7 +16,7 @@ export default function Home({ onOpenCart }) {
       {/* SECTION: HERO */}
       <section className="hero-section">
         <div className="hero-background">
-          <img src="/images/Hero 2 MiBazar.png" alt="Hero MiBazar" className="hero-bg-image" />
+          <img src="/images/Hero 3 MiBazar.png" alt="Hero MiBazar" className="hero-bg-image" />
         </div>
         <div className="container hero-container-centered">
           <div className="hero-content-bottom">
